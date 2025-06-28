@@ -1,5 +1,4 @@
 import os
-os.environ['HF_HOME'] = '/scratch/s3802655/cache/'
 import pandas as pd
 import bm25s
 from sentence_transformers import SentenceTransformer
@@ -9,7 +8,7 @@ from transformers import pipeline
 
 def main():
     # Read in and look at text column of data csv
-    docs = pd.read_csv('data/ds_with_paragraphs.csv')
+    docs = pd.read_csv('') # add data file
 
     corpus = []
     lens = []
@@ -21,7 +20,7 @@ def main():
     queries = list(docs['Claim'])
     K_s = [1,3,5,10]
     
-    token = "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"
+    token = "" # add huggingFace token
 
     retriever = bm25s.BM25(corpus=corpus)
     retriever.index(bm25s.tokenize(corpus))
