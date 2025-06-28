@@ -8,4 +8,4 @@ This folder contains the code for all of the preliminary experiments for the fin
 This folder contains the final RAG misinformation countering tool, `rag.py`. Please supply your own data file and HuggingFace token to run the tool. 
 
 ## Results
-This folder contains the results for botht the preliminary RAG experiments as well as the generated texts used for the tool evaluation.
+This folder contains the results for both the preliminary RAG experiments as well as the generated texts used for the tool evaluation.
