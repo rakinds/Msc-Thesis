@@ -1,0 +1,8 @@
+average P@1 for Hybrid-DU = 0.7099236641221374
+average P@1 for Hybrid-DU-reranked = 0.7282442748091603
+average P@3 for Hybrid-DU = 0.5852417302798989
+average P@3 for Hybrid-DU-reranked = 0.6249363867684485
+average P@5 for Hybrid-DU = 0.4854961832061067
+average P@5 for Hybrid-DU-reranked = 0.5392366412213749
+average P@10 for Hybrid-DU = 0.3296183206106862
+average P@10 for Hybrid-DU-reranked = 0.3781679389312975
