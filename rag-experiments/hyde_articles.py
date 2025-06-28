@@ -25,8 +25,8 @@ def main():
     retriever = bm25s.BM25(corpus=corpus)
     retriever.index(bm25s.tokenize(corpus))
 
-    p_model = SentenceTransformer('distiluse-base-multilingual-cased-v1', token=token)
-    p_passages = p_model.encode(corpus, show_progress_bar=True)
+    du_model = SentenceTransformer('distiluse-base-multilingual-cased-v1', token=token)
+    du_passages = du_model.encode(corpus, show_progress_bar=True)
 
     # Define model
     model_id = "microsoft/phi-4"
@@ -40,7 +40,7 @@ def main():
     )
 
     for K in K_s:
-        hybrid_p_all = []
+        hybrid_du_all = []
         for query_old in queries:
             # Define prompt
             prompt = 'Leg in een paar zinnen uit waarom onderstaande claim niet klopt.\n\n' + query_old
@@ -61,12 +61,12 @@ def main():
             bm25_results, bm25_scores = retriever.retrieve(bm25s.tokenize(query), k=100)
 
             # ST-DU
-            query_embedding = p_model.encode(query)
-            similarity = p_model.similarity(query_embedding, p_passages)
+            query_embedding = du_model.encode(query)
+            similarity = du_model.similarity(query_embedding, du_passages)
 
             # Zip similarities and corresponding documents
-            p_zipped = list(zip(corpus, list(similarity[0])))
-            p_zipped = sorted(p_zipped, key=lambda x: x[1], reverse=True)
+            du_zipped = list(zip(corpus, list(similarity[0])))
+            du_zipped = sorted(du_zipped, key=lambda x: x[1], reverse=True)
 
             # zip hybrids
             bm25_results = bm25_results[0]
@@ -74,25 +74,25 @@ def main():
             bm25 = list(zip(bm25_results, bm25_scores))
 
             # HYBRID-DU
-            hybrid_p = []
+            hybrid_du = []
             for item in bm25:
-                p_dict = dict(p_zipped)
-                p_score = float(p_dict[item[0]])
-                score = 0.3 * item[1] + p_score
-                hybrid_p.append((item[0], score))
+                du_dict = dict(du_zipped)
+                du_score = float(du_dict[item[0]])
+                score = 0.3 * item[1] + du_score
+                hybrid_du.append((item[0], score))
 
-            hybrid_p_sorted = sorted(hybrid_p, key=lambda tup: tup[1], reverse=True)[:K]
+            hybrid_du_sorted = sorted(hybrid_du, key=lambda tup: tup[1], reverse=True)[:K]
 
-            hybrid_p_relevant = 0
+            hybrid_du_relevant = 0
             # Check if each item in the retrieved docs is in the query's corresponding doc
-            for item in hybrid_p_sorted:
+            for item in hybrid_du_sorted:
                 if docs[docs['Claim'] == query_old].shape[0] == 1:
                     if item[0] in docs[docs['Claim'] == query_old].iloc[0].get("Text"):
-                        hybrid_p_relevant += 1
+                        hybrid_du_relevant += 1
                 else:
                     for i, row in docs[docs['Claim'] == query_old].iterrows():
                         if item[0] in row.get("Text"):
-                            hybrid_p_relevant += 1
+                            hybrid_du_relevant += 1
 
             # Calculate the total number of relevant docs
             if docs[docs['Claim'] == query_old].shape[0] == 1:
@@ -102,10 +102,10 @@ def main():
                 for i, row in docs[docs['Claim'] == query_old].iterrows():
                     total_relevant += lens[int(i)]
 
-            hybrid_p_r_k = hybrid_p_relevant / K
-            hybrid_p_all.append(hybrid_p_r_k)
-        print(f'average P@{K} for HyDE-DU = {sum(hybrid_p_all) / len(hybrid_p_all)}')
+            hybrid_du_r_k = hybrid_du_relevant / K
+            hybrid_du_all.append(hybrid_du_r_k)
+        print(f'average P@{K} for HyDE-DU = {sum(hybrid_du_all) / len(hybrid_du_all)}')
         with open('hyde_articles.txt', 'a') as f:
-                f.write(f'average P@{K} for HyDE-DU = {sum(hybrid_p_all) / len(hybrid_p_all)}')
+                f.write(f'average P@{K} for HyDE-DU = {sum(hybrid_du_all) / len(hybrid_du_all)}')
 
 main()
