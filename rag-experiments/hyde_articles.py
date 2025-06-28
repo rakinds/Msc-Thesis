@@ -106,6 +106,6 @@ def main():
             hybrid_du_all.append(hybrid_du_r_k)
         print(f'average P@{K} for HyDE-DU = {sum(hybrid_du_all) / len(hybrid_du_all)}')
         with open('hyde_articles.txt', 'a') as f:
-                f.write(f'average P@{K} for HyDE-DU = {sum(hybrid_du_all) / len(hybrid_du_all)}')
+                f.write(f'average P@{K} for HyDE-DU = {sum(hybrid_du_all) / len(hybrid_du_all)}\n')
 
 main()
